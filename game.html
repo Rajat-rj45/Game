@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Guess The Number Game</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: linear-gradient(135deg, #667eea, #764ba2);
+      color: white;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      margin: 0;
+    }
+
+    h1 {
+      font-size: 2em;
+      margin-bottom: 20px;
+    }
+
+    input {
+      padding: 10px;
+      font-size: 1em;
+      border: none;
+      border-radius: 5px;
+      outline: none;
+      width: 200px;
+      text-align: center;
+    }
+
+    button {
+      margin-top: 10px;
+      padding: 10px 20px;
+      font-size: 1em;
+      border: none;
+      border-radius: 5px;
+      background-color: #4CAF50;
+      color: white;
+      cursor: pointer;
+      transition: background 0.3s;
+    }
+
+    button:hover {
+      background-color: #45a049;
+    }
+
+    #message {
+      margin-top: 20px;
+      font-size: 1.2em;
+    }
+
+    #tries {
+      margin-top: 10px;
+      font-size: 1em;
+    }
+  </style>
+</head>
+<body>
+  <h1>🎯 Guess the Number (0–100)</h1>
+  <input type="number" id="guessInput" placeholder="Enter your guess" />
+  <button onclick="checkGuess()">Submit</button>
+
+  <p id="message"></p>
+  <p id="tries"></p>
+
+  <script>
+    const randomNumber = Math.floor(Math.random() * 100);
+    let count = 0;
+
+    function checkGuess() {
+      const input = document.getElementById("guessInput");
+      const message = document.getElementById("message");
+      const tries = document.getElementById("tries");
+
+      const guess = parseInt(input.value);
+      if (isNaN(guess)) {
+        message.textContent = "⚠️ Please enter a valid number!";
+        return;
+      }
+
+      count++;
+
+      if (guess === randomNumber) {
+        message.textContent = `🎉 You won! The number was ${randomNumber}.`;
+        tries.textContent = `Total tries: ${count}`;
+        input.disabled = true;
+      } else if (guess < randomNumber) {
+        message.textContent = "⬆️ Guess a bigger number!";
+        tries.textContent = `Tries: ${count}`;
+      } else {
+        message.textContent = "⬇️ Guess a smaller number!";
+        tries.textContent = `Tries: ${count}`;
+      }
+
+      input.value = "";
+      input.focus();
+    }
+  </script>
+</body>
+</html>
