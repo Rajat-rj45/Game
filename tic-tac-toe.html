@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Tic-Tac-Toe Game</title>
+  <style>
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+        Helvetica, Arial, sans-serif;
+      background: linear-gradient(135deg, #667eea, #764ba2);
+      color: white;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      margin: 0;
+      padding: 20px;
+      box-sizing: border-box;
+    }
+
+    .game-card {
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 15px;
+      padding: 25px 30px;
+      max-width: 400px;
+      width: 90%;
+      box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.2);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      border: 1px solid rgba(255, 255, 255, 0.18);
+      text-align: center;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+
+    .game-card h2 {
+      margin-top: 0;
+      font-size: 1.8em;
+      border-bottom: 2px solid rgba(255, 255, 255, 0.3);
+      padding-bottom: 10px;
+    }
+
+    button {
+      margin-top: 15px;
+      padding: 12px 25px;
+      font-size: 1.1em;
+      font-weight: bold;
+      border: none;
+      border-radius: 8px;
+      background-color: #4CAF50;
+      color: white;
+      cursor: pointer;
+      transition: background 0.3s, transform 0.2s;
+    }
+
+    button:hover {
+      background-color: #45a049;
+      transform: translateY(-2px);
+    }
+    
+    button:active {
+      transform: translateY(0);
+    }
+
+    .reset-btn {
+      background-color: #f44336;
+    }
+    .reset-btn:hover {
+      background-color: #d32f2f;
+    }
+
+    .message {
+      margin-top: 20px;
+      font-size: 1.2em;
+      font-weight: 500;
+      min-height: 2.5em;
+    }
+    
+    /* --- Tic-Tac-Toe Styles --- */
+    #ttt-board {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 10px;
+      margin: 20px auto;
+      max-width: 300px; /* बोर्ड का अधिकतम आकार */
+    }
+    
+    .ttt-cell {
+      width: 100%;
+      aspect-ratio: 1 / 1; /* वर्गाकार (Square) सेल */
+      background: rgba(255, 255, 255, 0.2);
+      border: 2px solid rgba(255, 255, 255, 0.3);
+      border-radius: 8px;
+      font-size: 3em;
+      font-weight: bold;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      color: white;
+      transition: background 0.3s;
+    }
+    .ttt-cell:hover {
+      background: rgba(255, 255, 255, 0.4);
+    }
+    .ttt-cell.x {
+      color: #84ff84; /* X के लिए हरा रंग */
+    }
+    .ttt-cell.o {
+      color: #ffdd00; /* O के लिए पीला रंग */
+    }
+  </style>
+</head>
+<body>
+  <div class="game-card" id="game-ttt">
+    <div>
+      <h2>✖️ Tic-Tac-Toe ⭕</h2>
+      <p>You are 'X'. Try to beat the computer 'O'!</p>
+      
+      <div id="ttt-board">
+        </div>
+
+      <p id="tttMessage" class="message"></p>
+    </div>
+    <button id="tttResetBtn" class="reset-btn">Play Again</button>
+  </div>
+
+  <script>
+    document.addEventListener("DOMContentLoaded", () => {
+      
+      /* --- GAME 3: TIC-TAC-TOE --- */
+      const tttBoard = document.getElementById("ttt-board");
+      const tttMessage = document.getElementById("tttMessage");
+      const tttResetBtn = document.getElementById("tttResetBtn");
+      
+      const PLAYER_X = 'X';
+      const PLAYER_O = 'O'; // Computer
+      let tttCurrentBoard;
+      let tttIsGameActive;
+
+      const winningConditions = [
+        [0, 1, 2], [3, 4, 5], [6, 7, 8], // Rows
+        [0, 3, 6], [1, 4, 7], [2, 5, 8], // Columns
+        [0, 4, 8], [2, 4, 6]  // Diagonals
+      ];
+
+      function startTttGame() {
+        tttCurrentBoard = Array(9).fill(null);
+        tttIsGameActive = true;
+        tttMessage.textContent = "Your turn (X)!";
+        tttMessage.style.color = "white";
+        tttBoard.innerHTML = ''; // बोर्ड साफ़ करें
+        
+        // 9 सेल्स बनाएं
+        for(let i = 0; i < 9; i++) {
+          const cell = document.createElement("div");
+          cell.classList.add("ttt-cell");
+          cell.dataset.index = i;
+          cell.addEventListener("click", handleTttCellClick);
+          tttBoard.appendChild(cell);
+        }
+      }
+
+      function handleTttCellClick(event) {
+        const clickedCell = event.target;
+        const index = clickedCell.dataset.index;
+
+        if (tttCurrentBoard[index] !== null || !tttIsGameActive) {
+          return;
+        }
+
+        updateTttCell(clickedCell, index, PLAYER_X);
+
+        if (checkTttWinner(PLAYER_X)) {
+          endTttGame(PLAYER_X);
+          return;
+        }
+
+        if (isTttBoardFull()) {
+          endTttGame("draw");
+          return;
+        }
+
+        tttIsGameActive = false;
+        setTimeout(computerMove, 500); // कंप्यूटर को सोचने का समय दें
+      }
+      
+      function updateTttCell(cell, index, player) {
+        tttCurrentBoard[index] = player;
+        cell.textContent = player;
+        cell.classList.add(player.toLowerCase());
+      }
+
+      function computerMove() {
+        let emptyCells = [];
+        for (let i = 0; i < tttCurrentBoard.length; i++) {
+          if (tttCurrentBoard[i] === null) {
+            emptyCells.push(i);
+          }
+        }
+        
+        const randomIndex = emptyCells[Math.floor(Math.random() * emptyCells.length)];
+        const cell = tttBoard.children[randomIndex];
+        
+        updateTttCell(cell, randomIndex, PLAYER_O);
+
+        if (checkTttWinner(PLAYER_O)) {
+          endTttGame(PLAYER_O);
+          return;
+        }
+
+        if (isTttBoardFull()) {
+          endTttGame("draw");
+          return;
+        }
+
+        tttIsGameActive = true;
+        tttMessage.textContent = "Your turn (X)!";
+      }
+      
+      function checkTttWinner(player) {
+        return winningConditions.some(combination => {
+          return combination.every(index => {
+            return tttCurrentBoard[index] === player;
+          });
+        });
+      }
+      
+      function isTttBoardFull() {
+        return tttCurrentBoard.every(cell => cell !== null);
+      }
+      
+      function endTttGame(result) {
+        tttIsGameActive = false;
+        if (result === 'draw') {
+          tttMessage.textContent = "It's a Draw!";
+          tttMessage.style.color = "white";
+        } else {
+          tttMessage.textContent = `${result} Wins!`;
+          tttMessage.style.color = (result === PLAYER_X) ? "#84ff84" : "#ff8484";
+        }
+      }
+      
+      tttResetBtn.addEventListener("click", startTttGame);
+      
+      // Initialize TTT game on load
+      startTttGame();
+    });
+  </script>
+</body>
+</html>

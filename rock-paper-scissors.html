@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Rock Paper Scissors Game</title>
+  <style>
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+        Helvetica, Arial, sans-serif;
+      background: linear-gradient(135deg, #667eea, #764ba2);
+      color: white;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      margin: 0;
+      padding: 20px;
+      box-sizing: border-box;
+    }
+
+    .game-card {
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 15px;
+      padding: 25px 30px;
+      max-width: 400px;
+      width: 90%;
+      box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.2);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      border: 1px solid rgba(255, 255, 255, 0.18);
+      text-align: center;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+
+    .game-card h2 {
+      margin-top: 0;
+      font-size: 1.8em;
+      border-bottom: 2px solid rgba(255, 255, 255, 0.3);
+      padding-bottom: 10px;
+    }
+
+    button {
+      margin-top: 15px;
+      padding: 12px 25px;
+      font-size: 1.1em;
+      font-weight: bold;
+      border: none;
+      border-radius: 8px;
+      background-color: #4CAF50;
+      color: white;
+      cursor: pointer;
+      transition: background 0.3s, transform 0.2s;
+    }
+
+    button:hover {
+      background-color: #45a049;
+      transform: translateY(-2px);
+    }
+    
+    button:active {
+      transform: translateY(0);
+    }
+
+    .message {
+      margin-top: 20px;
+      font-size: 1.2em;
+      font-weight: 500;
+      min-height: 2.5em;
+    }
+
+    /* --- Rock Paper Scissors Styles --- */
+    .rps-buttons button {
+      font-size: 2.5em;
+      margin: 0 10px;
+      padding: 15px;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.2);
+      border: 2px solid white;
+      width: 80px;
+      height: 80px;
+    }
+    .rps-buttons button:hover {
+      background: rgba(255, 255, 255, 0.4);
+    }
+    .rps-result-display {
+      font-size: 1.1em;
+      margin-top: 20px;
+    }
+    .rps-result-display span {
+      font-size: 1.5em;
+      vertical-align: middle;
+    }
+    #rps-score {
+      font-weight: bold;
+      font-size: 1.2em;
+      margin-top: 20px;
+    }
+  </style>
+</head>
+<body>
+  <div class="game-card" id="game-rps">
+    <div>
+      <h2>✊ Rock Paper Scissors ✌️</h2>
+      <p>Choose your weapon against the computer!</p>
+      
+      <div class="rps-buttons">
+        <button class="rps-choice" data-choice="rock">✊</button>
+        <button class="rps-choice" data-choice="paper">✋</button>
+        <button class="rps-choice" data-choice="scissors">✌️</button>
+      </div>
+
+      <p id="rpsResult" class="message"></p>
+      <div class="rps-result-display">
+        <p>Player: <span id="rpsPlayerChoice">?</span> vs Computer: <span id="rpsComputerChoice">?</span></p>
+      </div>
+    </div>
+    <p id="rpsScore">Score: You 0 - 0 Computer</p>
+  </div>
+
+  <script>
+    document.addEventListener("DOMContentLoaded", () => {
+      
+      /* --- GAME 2: ROCK PAPER SCISSORS --- */
+      let rpsPlayerScore = 0;
+      let rpsComputerScore = 0;
+      const rpsChoices = ["rock", "paper", "scissors"];
+      
+      const rpsChoiceButtons = document.querySelectorAll(".rps-choice");
+      const rpsResult = document.getElementById("rpsResult");
+      const rpsScore = document.getElementById("rpsScore");
+      const rpsPlayerChoiceSpan = document.getElementById("rpsPlayerChoice");
+      const rpsComputerChoiceSpan = document.getElementById("rpsComputerChoice");
+      
+      const rpsEmoji = { rock: "✊", paper: "✋", scissors: "✌️" };
+
+      rpsChoiceButtons.forEach(button => {
+        button.addEventListener("click", () => playRps(button.dataset.choice));
+      });
+
+      function playRps(playerChoice) {
+        const computerChoice = rpsChoices[Math.floor(Math.random() * 3)];
+        
+        rpsPlayerChoiceSpan.textContent = rpsEmoji[playerChoice];
+        rpsComputerChoiceSpan.textContent = rpsEmoji[computerChoice];
+
+        if (playerChoice === computerChoice) {
+          rpsResult.textContent = "It's a draw!";
+          rpsResult.style.color = "white";
+        } else if (
+          (playerChoice === "rock" && computerChoice === "scissors") ||
+          (playerChoice === "paper" && computerChoice === "rock") ||
+          (playerChoice === "scissors" && computerChoice === "paper")
+        ) {
+          rpsPlayerScore++;
+          rpsResult.textContent = "You win this round!";
+          rpsResult.style.color = "#84ff84"; // Green
+        } else {
+          rpsComputerScore++;
+          rpsResult.textContent = "Computer wins this round!";
+          rpsResult.style.color = "#ff8484"; // Red
+        }
+        updateRpsScore();
+      }
+      
+      function updateRpsScore() {
+        rpsScore.textContent = `Score: You ${rpsPlayerScore} - ${rpsComputerScore} Computer`;
+      }
+    });
+  </script>
+</body>
+</html>
