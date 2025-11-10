@@ -1,11 +1,11 @@
 const http = require('http');
 const fs = require('fs');
 
-// एक हेल्पर फ़ंक्शन जो फ़ाइल को पढ़ने और भेजने का काम करेगा
+// A helper function to read and serve files
 function serveFile(res, filename) {
   fs.readFile(filename, "utf-8", (err, data) => {
     if (err) {
-      console.error(err); // सर्वर कंसोल पर एरर दिखाएं
+      console.error(err); // Log the error to the server console
       res.writeHead(500, { 'Content-Type': 'text/plain' });
       res.end("500 - Internal Server Error");
     } else {
@@ -15,14 +15,14 @@ function serveFile(res, filename) {
   });
 }
 
-// सर्वर बनाना
+// Create the server
 const server = http.createServer((req, res) => {
   
-  console.log(`Request received for: ${req.url}`); // यह कंसोल में दिखाएगा कि कौन सा URL रिक्वेस्ट हुआ है
+  console.log(`Request received for: ${req.url}`); // This will show which URL was requested in the console
 
   switch (req.url) {
     case '/':
-      // रूट URL (/) पर, एक मेनू पेज दिखाएं
+      // At the root URL (/), show a menu page
       res.writeHead(200, { 'Content-Type': 'text/html' });
       res.end(`
        <!DOCTYPE html>
@@ -169,28 +169,28 @@ const server = http.createServer((req, res) => {
       break;
 
     case '/guess':
-      // '/guess' URL पर, guess-the-number.html फ़ाइल सर्व करें
+      // On the '/guess' URL, serve the guess-the-number.html file
       serveFile(res, 'guess-the-number.html');
       break;
 
     case '/rps':
-      // '/rps' URL पर, rock-paper-scissors.html फ़ाइल सर्व करें
+      // On the '/rps' URL, serve the rock-paper-scissors.html file
       serveFile(res, 'rock-paper-scissors.html');
       break;
 
     case '/ttt':
-      // '/ttt' URL पर, tic-tac-toe.html फ़ाइल सर्व करें
+      // On the '/ttt' URL, serve the tic-tac-toe.html file
       serveFile(res, 'tic-tac-toe.html');
       break;
 
     default:
-      // अगर कोई और URL है, तो 404 Not Found दिखाएं
+      // If any other URL is requested, show a 404 Not Found error
       res.writeHead(404, { 'Content-Type': 'text/html' });
       res.end('<h1>404 Not Found</h1><p>Page not found. Go to <a href="/">Homepage</a>.</p>');
   }
 });
 
-// सर्वर को 3000 पोर्ट पर सुनना
+// Listen for connections on port 3000
 server.listen(3000, () => {
   console.log('Server is running on http://localhost:3000');
 });
